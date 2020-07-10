@@ -9,6 +9,8 @@ while True:
 		incorrect_guesses = int(input("How many incorrect attempts do you want? [0,20]\n"))
 		if type(incorrect_guesses) == int and incorrect_guesses >=0 and incorrect_guesses <=20:
 			break
+		else:
+			print("That number is not in the range")
 	except ValueError:
 		print("that is not a valid integer!")
 num_incorrect = 0
