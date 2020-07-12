@@ -5,7 +5,8 @@ def print_board():
 
 
 print("Welcome to Hangman in Python!")
-guess_word = input("Please enter a word to guess:\n")
+with open('hangman_comp_words.txt') as file:
+	guess_word = file.read()
 
 list_word = list('*'*len(guess_word))
 num_guess = 0

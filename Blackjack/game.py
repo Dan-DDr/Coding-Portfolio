@@ -1,14 +1,14 @@
 from CardAndDeck import Card, Deck
 
 
+p_money = 10000.0
+d_money = 10000.0
+
 values = ('2','3','4','5','6','7','8','9','10','J','Q','K')
 values_to_pts = dict(zip(values[:-3],range(2,11)))
 values_to_pts.update({'J':10,'Q':10,'K':10})
 
 
-p_money = 10000.0
-d_money = 10000.0
-gamestate = True
 
 def calculate_best_hands(hand1, hand2):
 	hands = [calculate_pts(hand1), calculate_pts(hand2)]
@@ -32,6 +32,30 @@ def calculate_pts(hand):
 			pts2 += values_to_pts[card.value]
 	return (pts, pts2)
 
+	
+def calculate_winner(hand1, hand2, bid):
+	best_hands = calculate_best_hands(hand1, hand2)
+	global p_money
+	global d_money
+	if best_hands[0] == best_hands[1]:
+		print("Its a draw!")
+		p_money += bid
+		d_money += bid
+	elif best_hands[0] == 21:
+		print(f"Blackjack! You Win ${bid}")
+		p_money += 3/2*bid
+	elif best_hands[1] == 21:
+		print(f"Blackjack! Dealer Wins ${bid}")
+		d_money += 3/2*bid
+	elif best_hands[0] > best_hands[1]:
+		print(f"You Win ${bid}!")
+		p_money += 2*bid
+	elif best_hands[0] < best_hands[1]:
+		print(f"Dealer wins ${bid}!")
+		d_money += 2*bid
+
+
+
 def display_board(state=False):
 
 	if p_pts[0] == p_pts[1] or p_pts[1] > 21:
@@ -47,22 +71,8 @@ def display_board(state=False):
 		print(f"\nDealer's Hand: {d_hand}\nDealer's Worth: {pts_d}")
 	else:
 		print(f"\nDealer's Hand: {[d_hand[0],'*']}")
-
-	print(f"Your Hand: {p_hand}\nYour Worth: {pts}\n")
-	
-def calculate_winner():
-	best_hands = calculate_best_hands(p_hand, d_hand)
-	if best_hands[0] == best_hands[1]:
-		print("Its a draw!")
-	elif best_hands[0] == 21:
-		print("Blackjack! You Win")
-	elif best_hands[1] == 21:
-		print("Blackjack! Dealer Wins")
-	elif best_hands[0] > best_hands[1]:
-		print("You Win!")
-	elif best_hands[0] < best_hands[1]:
-		print("Dealer wins!")
-
+	print(f"Dealer's money: {d_money}")
+	print(f"Your Hand: {p_hand}\nYour Worth: {pts}\nYour money: {p_money}\n")
 
 print("\nWelcome to Blackjack!")
 while True:
@@ -72,7 +82,20 @@ while True:
 	elif answer == 'y':
 		break
 
-while gamestate:	
+
+while p_money > 0:
+	while True:
+		try:
+			bid = input("Make a bid or enter q to quit\n")
+			p_money -= float(bid)
+			d_money -= float(bid)
+			break
+		except ValueError:
+			if bid == 'q':
+				break
+			print("Please enter a number\n")
+	if bid == 'q':
+		break
 	deck = Deck()
 	deck.shuffle()
 
@@ -89,8 +112,10 @@ while gamestate:
 				p_hand.append(*deck.deal_hand(1))
 				p_pts = calculate_pts(p_hand)
 				display_board()
+
 			elif p_choice.lower() == 'stand':
 				d_pts = calculate_pts(d_hand)
+				print("\nDealer is playing...")
 
 				while min(d_pts) < 17:
 					d_hand.append(*deck.deal_hand(1))
@@ -98,21 +123,22 @@ while gamestate:
 
 				display_board(state=True)
 				if min(d_pts) > 21:
-					print("Dealer Busts! You Win")
+					print(f"Dealer Busts! You Win ${bid}")
+					p_money += 2*bid
 					break
-				calculate_winner()
+				calculate_winner(p_hand, d_hand, bid)
 				break
 		else:
-			print("You bust! Sorry you lose :(")
+			print(f"You bust! Sorry you lost ${bid}")
+			d_money += 2*bid
 			break
 
-	while True:
-		answer = input("Do you want to play again or quit?(y/n)\n")
-		if answer == 'n':
-			quit()
-		elif answer == 'y':
-			break
-	
+if d_money < 0:
+	print("Wow, you won all the money I had, Congrats!")
 
+elif p_money < 0:
+	print("I think you should stop playing. Losing that much money has got to hurt.")
+else:
+	print(f"Congrats you won ${p_money - 10000.0}")
 
 
