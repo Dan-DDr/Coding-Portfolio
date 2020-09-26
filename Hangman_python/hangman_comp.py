@@ -1,20 +1,33 @@
 from random import randint
+import pyfiglet 
 '''This is a user generated word hangman game'''
 
 
 def print_board():
     print(f'\nWORD: {print_word}\n# OF GUESSES MADE: {num_guess}\n# OF INCORRECT GUESSES: {num_incorrect}\nGUESSES:{guesses}\n')
 
+result = pyfiglet.figlet_format("Welcome to Hangman in Python!") 
+print(result) 
 
-print("Welcome to Hangman in Python!")
 with open('hangman_comp_words.txt') as file:
     words = file.read()
     words = words[:len(words)-1]
     words = words.split(' ')
 while True:
-    guess_word = words[randint(0, len(words)-1)].lower()
+    while True:
+        try:
+            word_len = int(input('How long do you want the words to be?\n'))
+        except (ValueError,TypeError):
+            print('Please enter a valid number')
+            continue
 
-    list_word = list('*'*len(guess_word))
+        playwords = [w for w in words if len(w) == word_len]
+        if len(playwords) != 0:
+            break
+        print(f'Sorry there are no words that are {word_len} characters long')
+
+    guess_word = playwords[randint(0, len(playwords)-1)].lower()
+    list_word = list('-'*len(guess_word))
     num_guess = 0
     while True:
         try:
@@ -31,7 +44,7 @@ while True:
     print_word = "".join(list_word)
     print_board()
     while num_incorrect <= incorrect_guesses:
-        guess = input("Please enter a letter to guess:\n")
+        guess = input("Please enter a letter to guess:\n").lower()
         if guess in guesses:
             print("You have already guessed that letter")
             continue
