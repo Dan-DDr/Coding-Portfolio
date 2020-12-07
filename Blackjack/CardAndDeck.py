@@ -13,8 +13,6 @@ class Card:
         return f"{self.value} of {self.suit}"
 
 
-suits = ('♠', '♣', '♦', '♥')
-values = ('A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K')
 
 
 class Deck:
@@ -22,12 +20,17 @@ class Deck:
     Has .deal_hand(num) which allows you to deal a num hand
     Has .shuffle() which shuffles the Deck instance
     """
+    _suits = ('♠', '♣', '♦', '♥')
+    _values = ('A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K')
 
     def __init__(self):
-        self.cards = [Card(suit, value) for value in values for suit in suits]
+        self.cards = [Card(suit, value) for value in self._values for suit in self._suits]
 
     def __len__(self):
         return len(self.cards)
+
+    def __iter__(self):
+        return iter(self.cards)
 
     def __repr__(self):
         return f"A Deck of {len(self.cards)} cards"
@@ -42,3 +45,9 @@ class Deck:
 
     def shuffle(self):
         shuffle(self.cards)
+    
+    def reset(self):
+        self.cards = [Card(suit, value) for value in self._values for suit in self._suits]
+d = Deck()
+print(d.suits)
+print(d.values)
