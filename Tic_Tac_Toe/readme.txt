@@ -1,3 +1,3 @@
 Just open index.html page with browser and enjoy!
 
-PS: Don't mess with the folder structure its there for a reason
+NOTE: Don't move any of the files inside the folder, this will cause the game to not work
